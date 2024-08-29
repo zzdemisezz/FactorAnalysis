@@ -65,5 +65,13 @@ if (is.null(generator)) {
 set.seed(12 + simulation_index)  # Ensure different seeds for different runs
 results <- run_simulations(generator, 1)
 
-# Save the results to a file
-saveRDS(results, file = paste0("results_", data_generator_name, "_sim_", simulation_index, ".rds"))
+
+# Create subfolder if it doesn't exist
+output_dir <- file.path("results", data_generator_name)
+if (!dir.exists(output_dir)) {
+  dir.create(output_dir, recursive = TRUE)
+}
+
+# Save the results to a file in the subfolder
+output_file <- file.path(output_dir, paste0("results_sim_", simulation_index, ".rds"))
+saveRDS(results, file = output_file)
