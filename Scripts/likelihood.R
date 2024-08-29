@@ -1,5 +1,14 @@
-install.packages("Scripts/mvtnorm_1.2-6.tar.gz", repos = NULL, type="source")
-install.packages("Scripts/invgamma_1.1.tar.gz", repos = NULL, type="source")
+# Check if the 'mvtnorm' package is installed
+if (!requireNamespace("mvtnorm", quietly = TRUE)) {
+  install.packages("Scripts/mvtnorm_1.2-6.tar.gz", repos = NULL, type="source")
+}
+
+# Check if the 'invgamma' package is installed
+if (!requireNamespace("invgamma", quietly = TRUE)) {
+  install.packages("Scripts/invgamma_1.1.tar.gz", repos = NULL, type="source")
+}
+
+# Load the libraries
 library(mvtnorm)
 library(invgamma)
 
