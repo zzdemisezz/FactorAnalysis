@@ -9,7 +9,7 @@
 #SBATCH --cpus-per-task=1                   # Number of CPU cores per job
 
 # Load the R module
-module load R/4.x.x  # Adjust according to your cluster's configuration
+module load R/4.3.2-gfbf-2023a  # Adjust according to your cluster's configuration
 
 # List of data generator names
 data_generators=("SmallFactors_3x3_Strong" "SmallFactors_3x3_Moderate" "SmallFactors_3x3_Weak" "LargeFactors_5x5_Strong" "LargeFactors_5x5_Moderate" "LargeFactors_5x5_Weak" "Overlap2_Small_Strong" "Overlap2_Small_Moderate" "Overlap2_Small_Weak" "Overlap2_Large_Strong" "Overlap2_Large_Moderate" "Overlap2_Large_Weak" "Overlap3_Small_Strong" "Overlap3_Small_Moderate" "Overlap3_Small_Weak" "Overlap3_Large_Strong" "Overlap3_Large_Moderate" "Overlap3_Large_Weak")
