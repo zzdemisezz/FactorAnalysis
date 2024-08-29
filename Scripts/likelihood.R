@@ -1,3 +1,5 @@
+install.packages("Scripts/mvtnorm_1.2-6.tar.gz", repos = NULL, type="source")
+install.packages("Scripts/invgamma_1.1.tar.gz", repos = NULL, type="source")
 library(mvtnorm)
 library(invgamma)
 

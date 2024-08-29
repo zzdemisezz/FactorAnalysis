@@ -1,3 +1,4 @@
+install.packages("Scripts/mvtnorm_1.2-6.tar.gz", repos = NULL, type="source")
 library(mvtnorm)
 
 # Function to generate B, PSI, and Y for 2D data 
