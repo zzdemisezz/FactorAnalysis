@@ -68,7 +68,7 @@ results <- run_simulations(generator, 1)
 
 
 # Create subfolder if it doesn't exist
-output_dir <- file.path("/well/nichols/users/rht383/results3", data_generator_name)
+output_dir <- file.path("/well/nichols/users/rht383/results4", data_generator_name)
 if (!dir.exists(output_dir)) {
   dir.create(output_dir, recursive = TRUE)
 }
