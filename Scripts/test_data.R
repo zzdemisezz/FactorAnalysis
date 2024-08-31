@@ -1,13 +1,22 @@
 source("Scripts/data_generation.R")
 
 # initialisation
-set.seed(12)
 n <- 200
 dim1 <- 10
 dim2 <- 10
 q <- 3
 
-data <- generate_data(n, dim1, dim2, q, 4, "weak", FALSE)
+set.seed(13)
+data <- generate_data(n, dim1, dim2, q, 5, "weak", FALSE)
+set.seed(14)
+data2 <- generate_data(n, dim1, dim2, q, 5, "weak", FALSE)
+identical(data$PSI_true, data2$PSI_true)
+identical(data$Y, data2$Y)
+
+View(data$PSI_true)
+View(data2$PSI_true)
+View(data$Y)
+View(data2$Y)
 
 # data <- generate_data_2overlap(n, dim1, dim2, q, overlap = "big",
 #                          print_factors = TRUE)

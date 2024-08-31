@@ -51,7 +51,7 @@ generate_data <- function(n, dim1, dim2, q, square_size = 5,
   old_seed <- .Random.seed  # Save the current random seed
   set.seed(5)  # Set a seed specifically for generating PSI_true
   PSI_true <- diag(runif(p, min = psi_range[1], max = psi_range[2]))
-  .Random.seed <- old_seed  # Restore the previous random seed
+  .Random.seed <<- old_seed  # Restore the previous random seed
   
   # Generate noise covariance matrix and synthetic data
   Covariance_matrix_true <- B_true %*% t(B_true) + PSI_true
