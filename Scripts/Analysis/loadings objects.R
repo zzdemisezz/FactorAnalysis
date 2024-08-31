@@ -44,23 +44,25 @@ load_data <- function(subdir_path) {
 }
 
 # Example usage:
-subdir_path <- "results3/Overlap3_Large_Moderate"
+subdir_path <- "results4/Overlap2_Large_Moderate"
 LargeFactors_5x5_Moderate <- load_data(subdir_path)
 LargeFactors_5x5_Moderate_dataframe <- LargeFactors_5x5_Moderate$dataframe
 LargeFactors_5x5_Moderate_data <- LargeFactors_5x5_Moderate$raw_data
 
 # Example: Access the first sim LargeFactors_5x5_Moderate_data[[1]] ####
 
-likelihoods <- numeric(100)  # Pre-allocate a numeric vector to store the likelihoods
+likelihoods <- numeric(length(LargeFactors_5x5_Moderate_dataframe$B))  # Pre-allocate a numeric vector to store the likelihoods
 
 # Loop through indices from 1 to 100
-for (i in 1:95) {
+for (i in 1:length(LargeFactors_5x5_Moderate_dataframe$B)) {
   likelihoods[i] <- LargeFactors_5x5_Moderate_data[[i]]$all_results_em[[1]]$best_result$likelihood
 }
+likelihoods
+zero_indices <- which(likelihoods == 0)
+print(zero_indices)
 
-# Remove row 21
-LargeFactors_5x5_Moderate_dataframe <- LargeFactors_5x5_Moderate_dataframe[-41, ]
-LargeFactors_5x5_Moderate_dataframe <- LargeFactors_5x5_Moderate_dataframe[-47, ]
+# Remove zero rows
+LargeFactors_5x5_Moderate_dataframe <- LargeFactors_5x5_Moderate_dataframe[-c(zero_indices), ]
 
 # Add permutations ####
 # Function to permute B matrices and add them to the dataframe
@@ -87,15 +89,17 @@ LargeFactors_5x5_Moderate_dataframe <- add_permuted_B(LargeFactors_5x5_Moderate_
                                                       B_true)
 
 # Now compare the aligned and sign-adjusted B_est_permuted with B_true
-MSE_permuted <- numeric(93)
-for (i in 1:93) {
+MSE_permuted <- numeric(length(LargeFactors_5x5_Moderate_dataframe$B))
+for (i in 1:length(LargeFactors_5x5_Moderate_dataframe$B)) {
   MSE_permuted[i] <- sqrt(mean((B_true - LargeFactors_5x5_Moderate_dataframe$B_permuted[[i]])^2))
 }
+MSE_permuted
 
-MSE <- numeric(93)
-for (i in 1:93) {
+MSE <- numeric(length(LargeFactors_5x5_Moderate_dataframe$B))
+for (i in 1:length(LargeFactors_5x5_Moderate_dataframe$B)) {
   MSE[i] <- sqrt(mean((B_true - LargeFactors_5x5_Moderate_dataframe$B[[i]])^2))
 }
+MSE
 
 # Heatmap ####
 # Load necessary libraries
@@ -103,7 +107,7 @@ library(ggplot2)
 library(reshape2)
 
 # Initialize an empty matrix for the average B matrix
-average_B <- Reduce(`+`, LargeFactors_5x5_Moderate_dataframe$B) / length(LargeFactors_5x5_Moderate_dataframe$B)
+average_B <- Reduce(`+`, LargeFactors_5x5_Moderate_dataframe$B_permuted) / length(LargeFactors_5x5_Moderate_dataframe$B)
 bias_B <- average_B - B_true
 
 average_Covariance_matrix <- Reduce(`+`, LargeFactors_5x5_Moderate_dataframe$Covariance_matrix) / length(LargeFactors_5x5_Moderate_dataframe$Covariance_matrix)
