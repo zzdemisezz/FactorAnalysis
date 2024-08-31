@@ -1,7 +1,3 @@
-# source("Scripts/em.R")
-# source("Scripts/em_beta.R")
-# source("Scripts/run_em.R")
-
 # Function to run simulations for a specific data generator
 run_simulations <- function(generator, num_simulations) {
   all_datasets <- vector("list", num_simulations)

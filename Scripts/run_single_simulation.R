@@ -10,6 +10,9 @@ args <- commandArgs(trailingOnly = TRUE)
 data_generator_name <- args[1]  # Name of the data generator
 simulation_index <- as.integer(args[2])  # Index of the simulation
 
+# Run the simulation
+set.seed(12 + simulation_index)  # Ensure different seeds for different runs
+
 # Parameters
 n <- 500 
 q <- 3
@@ -61,8 +64,6 @@ if (is.null(generator)) {
   stop("Invalid data generator name.")
 }
 
-# Run the simulation
-set.seed(12 + simulation_index)  # Ensure different seeds for different runs
 results <- run_simulations(generator, 1)
 
 

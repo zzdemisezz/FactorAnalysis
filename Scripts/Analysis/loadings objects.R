@@ -1,4 +1,3 @@
-source("Scripts/data_generation.R")
 source("Scripts/Analysis/permute.R")
 # Load Data/Dataframe ####
 load_data <- function(subdir_path) {
@@ -20,12 +19,16 @@ load_data <- function(subdir_path) {
     B_truncated_matrix <- simulation_data[[i]]$all_results_em[[1]]$best_result$B_truncated
     GAMMA_truncated_matrix <- simulation_data[[i]]$all_results_em[[1]]$best_result$GAMMA_truncated
     Covariance_matrix <- simulation_data[[i]]$all_results_em[[1]]$best_result$Covariance_matrix_truncated
+    B_True <- simulation_data[[i]]$all_datasets[[1]]$B_true
+    Covariance_matrix_true <- simulation_data[[i]]$all_datasets[[1]]$Covariance_matrix_true
     
     # Create a list representing one row of the dataframe, storing matrices as lists
     simulation_row <- data.frame(
       B = I(list(B_truncated_matrix)),
       GAMMA = I(list(GAMMA_truncated_matrix)),
       Covariance_matrix = I(list(Covariance_matrix)),
+      B_True = I(list(B_True)),
+      Covariance_matrix_true = I(list(Covariance_matrix_true)),
       Simulation = i
     )
     
@@ -40,27 +43,11 @@ load_data <- function(subdir_path) {
   return(list(dataframe = result_dataframe, raw_data = simulation_data))
 }
 
-n <- 500 
-q <- 3
-dim1 <- 10
-dim2 <- 10
-print_factors <- FALSE
-
-true_data <- generate_data(n, dim1 = dim1, dim2 = dim2, q = q, square_size = 5, 
-                           corr = "moderate", print_factors = print_factors)
 # Example usage:
-subdir_path <- "results/LargeFactors_5x5_Moderate"
+subdir_path <- "results2/LargeFactors_5x5_Moderate"
 LargeFactors_5x5_Moderate <- load_data(subdir_path)
 LargeFactors_5x5_Moderate_dataframe <- LargeFactors_5x5_Moderate$dataframe
 LargeFactors_5x5_Moderate_data <- LargeFactors_5x5_Moderate$raw_data
-
-# Extract B_true and Covariance_matrix_true from true_data
-B_true_matrix <- true_data$B_true
-Covariance_matrix_true <- true_data$Covariance_matrix_true
-
-# Add B_true and Covariance_matrix_true to the dataframe
-LargeFactors_5x5_Moderate_dataframe$B_true <- I(list(B_true_matrix))
-LargeFactors_5x5_Moderate_dataframe$Covariance_matrix_true <- I(list(Covariance_matrix_true))
 
 # Remove row 21
 LargeFactors_5x5_Moderate_dataframe <- LargeFactors_5x5_Moderate_dataframe[-21, ]
@@ -83,17 +70,21 @@ add_permuted_B <- function(dataframe, B_true) {
   return(dataframe)
 }
 
-LargeFactors_5x5_Moderate_dataframe <- add_permuted_B(LargeFactors_5x5_Moderate_dataframe, true_data$B_true)
+B_true <- LargeFactors_5x5_Moderate_dataframe$B_True[[1]]
+Covariance_matrix_true <- LargeFactors_5x5_Moderate_dataframe$Covariance_matrix_true[[1]]
+
+LargeFactors_5x5_Moderate_dataframe <- add_permuted_B(LargeFactors_5x5_Moderate_dataframe, 
+                                                      B_true)
 
 # Now compare the aligned and sign-adjusted B_est_permuted with B_true
 MSE_permuted <- numeric(99)
 for (i in 1:99) {
-  MSE_permuted[i] <- sqrt(mean((true_data$B_true - LargeFactors_5x5_Moderate_dataframe$B_permuted[[i]])^2))
+  MSE_permuted[i] <- sqrt(mean((B_true - LargeFactors_5x5_Moderate_dataframe$B_permuted[[i]])^2))
 }
 
 MSE <- numeric(99)
 for (i in 1:99) {
-  MSE[i] <- sqrt(mean((true_data$B_true - LargeFactors_5x5_Moderate_dataframe$B[[i]])^2))
+  MSE[i] <- sqrt(mean((B_true - LargeFactors_5x5_Moderate_dataframe$B[[i]])^2))
 }
 
 rmse <- sqrt(mean((true_data$B_true - LargeFactors_5x5_Moderate_dataframe$B_permuted[[1]])^2))
