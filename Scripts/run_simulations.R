@@ -4,6 +4,7 @@
 
 # Function to run simulations for a specific data generator
 run_simulations <- function(generator, num_simulations) {
+  all_datasets <- vector("list", num_simulations)
   all_results_em <- vector("list", num_simulations)
   all_results_em_beta <- vector("list", num_simulations)
   pca_best_count_em <- 0  # Initialize counter for PCA best results in em
@@ -16,6 +17,7 @@ run_simulations <- function(generator, num_simulations) {
       
       # Generate new data for each simulation run
       data <- generator()  # Call the generator function to get the data
+      all_datasets[[sim]] <- data  # Save the generated dataset
       
       # Run the EM algorithm
       results_em <- run_em_algorithm(em, data, q, dim1, dim2, tol = tol, 
@@ -35,6 +37,7 @@ run_simulations <- function(generator, num_simulations) {
   return(list(
     all_results_em = all_results_em,
     all_results_em_beta = all_results_em_beta,
+    all_datasets = all_datasets,  # Return the list of datasets
     pca_best_count_em = pca_best_count_em,
     pca_best_count_em_beta = pca_best_count_em_beta,
     total_simulation_time = total_simulation_time
