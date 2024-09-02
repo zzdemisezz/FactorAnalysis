@@ -14,7 +14,7 @@ module load R/4.3.2-gfbf-2023a  # Adjust according to your cluster's configurati
 data_generators=("3x3-strong" "3x3-moderate" "3x3-weak" "5x5-strong" "5x5-moderate" "5x5-weak" "overlap2-small-strong" "overlap2-small-moderate" "overlap2-small-weak" "overlap2-large-strong" "overlap2-large-moderate" "overlap2-large-weak" "overlap3-small-strong" "overlap3-small-moderate" "overlap3-small-weak" "overlap3-large-strong" "overlap3-large-moderate" "overlap3-large-weak")
 
 # Number of simulations per data generator
-num_simulations=100
+num_simulations=120
 
 # Calculate the data generator and simulation index based on the SLURM array index
 total_simulations=$((${#data_generators[@]} * num_simulations))
