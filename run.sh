@@ -11,7 +11,7 @@
 module load R/4.3.2-gfbf-2023a  # Adjust according to your cluster's configuration
 
 # List of data generator names
-data_generators=("SmallFactors_3x3_Strong" "SmallFactors_3x3_Moderate" "SmallFactors_3x3_Weak" "LargeFactors_5x5_Strong" "LargeFactors_5x5_Moderate" "LargeFactors_5x5_Weak" "Overlap2_Small_Strong" "Overlap2_Small_Moderate" "Overlap2_Small_Weak" "Overlap2_Large_Strong" "Overlap2_Large_Moderate" "Overlap2_Large_Weak" "Overlap3_Small_Strong" "Overlap3_Small_Moderate" "Overlap3_Small_Weak" "Overlap3_Large_Strong" "Overlap3_Large_Moderate" "Overlap3_Large_Weak")
+data_generators=("3x3-strong" "3x3-moderate" "3x3-weak" "5x5-strong" "5x5-moderate" "5x5-weak" "overlap2-small-strong" "overlap2-small-moderate" "overlap2-small-weak" "overlap2-large-strong" "overlap2-large-moderate" "overlap2-large-weak" "overlap3-small-strong" "overlap3-small-moderate" "overlap3-small-weak" "overlap3-large-strong" "overlap3-large-moderate" "overlap3-large-weak")
 
 # Number of simulations per data generator
 num_simulations=100

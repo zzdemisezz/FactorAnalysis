@@ -44,7 +44,7 @@ load_data <- function(subdir_path) {
 }
 
 # Example usage:
-subdir_path <- "results4/Overlap2_Large_Moderate"
+subdir_path <- "results4/LargeFactors_5x5_Moderate"
 LargeFactors_5x5_Moderate <- load_data(subdir_path)
 LargeFactors_5x5_Moderate_dataframe <- LargeFactors_5x5_Moderate$dataframe
 LargeFactors_5x5_Moderate_data <- LargeFactors_5x5_Moderate$raw_data

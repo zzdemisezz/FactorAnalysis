@@ -86,7 +86,7 @@ em <- function(Y, q, dim1 = 10, dim2 = 10, dim3 = NULL, tol = 1e-3,
     
     # Update PSI
     term1 <- colSums(Y^2)
-
+    
     E_zt_Y <- E_zt %*% Y  # q x p matrix
     term2 <- -2 * rowSums(B * t(E_zt_Y))
     

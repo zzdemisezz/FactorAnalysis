@@ -1,7 +1,9 @@
+rm(list = ls())
 source("Scripts/data_generation.R")
 source("Scripts/em.R")
 source("Scripts/em_beta.R")
 source("Scripts/run_em.R")
+source("Scripts/em_pxl.R")
 
 # set seed
 set.seed(12)
@@ -14,7 +16,7 @@ dim2 <- 10
 max_iter <- 5000
 tol = 1e-2
 ll <- FALSE
-num_runs <- 4
+num_runs <- 10
 
 # Generate data
 data <- generate_data(n, dim1, dim2, q, 5, corr = "strong", print_factors = TRUE)
@@ -23,17 +25,17 @@ data <- generate_data(n, dim1, dim2, q, 5, corr = "strong", print_factors = TRUE
 # data <- generate_data_3overlap(n, dim1, dim2, q, overlap = "big",
 #                                corr = "weak", print_factors = FALSE)
 
-View(data$cor_matrix)
+# View(data$cor_matrix)
 
 output <- run_em_algorithm(em, data, q, dim1, dim2, tol = tol, 
                                 max_iter = max_iter, ll = ll, num_runs = num_runs)
 # # check specific initilialisation
-# output$results[[9]]$likelihood
-# output2 <- run_em_algorithm(em_beta, data, q, tol = tol, 
-#                                 max_iter = max_iter, ll = ll, num_runs = num_runs)
-
 best_result <- output$best_result
-best_result2 <- output2$best_result
+output$results[[11]]$GAMMA_truncated
+best_result$likelihood
+best_result$GAMMA_truncated
+stop()
+best_result$B_truncated
 
 non_truncated <- mean((data$B_true - best_result$B)^2)
 truncated <- mean((data$B_true - best_result$B_truncated)^2)
@@ -44,7 +46,6 @@ best_result$likelihood
 best_result$converged
 best_result$iter
 best_result$B
-best_result$B_truncated
 best_result$GAMMA
 best_result$GAMMA_truncated
 View(best_result$Covariance_matrix)
@@ -56,20 +57,24 @@ data$B_true
 output$total_time
 output$pca_best
 
-
-non_truncated <- mean((data$B_true - best_result2$B)^2)
-truncated <- mean((data$B_true - best_result2$B_truncated)^2)
-print(non_truncated)
-print(truncated)
-
-best_result2$likelihood
-best_result2$converged
-best_result2$iter
-best_result2$B
-best_result2$B_truncated
-best_result2$GAMMA
-best_result2$GAMMA_truncated
-data$B_true
+# output2 <- run_em_algorithm(em_beta, data, q, tol = tol,
+#                                 max_iter = max_iter, ll = ll, num_runs = num_runs)
+# best_result2 <- output2$best_result
+# 
+# 
+# non_truncated <- mean((data$B_true - best_result2$B)^2)
+# truncated <- mean((data$B_true - best_result2$B_truncated)^2)
+# print(non_truncated)
+# print(truncated)
+# 
+# best_result2$likelihood
+# best_result2$converged
+# best_result2$iter
+# best_result2$B
+# best_result2$B_truncated
+# best_result2$GAMMA
+# best_result2$GAMMA_truncated
+# data$B_true
 
 # ignore ####
 # print_results <- function(data, best_result, model_name) {

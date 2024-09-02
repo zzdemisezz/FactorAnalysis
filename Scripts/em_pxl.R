@@ -117,7 +117,7 @@ em_pxl <- function(Y, q, dim1 = 10, dim2 = 10, dim3 = NULL, tol = 1e-3,
     ll_new <- likelihood(Y, B, PSI, GAMMA, v0, v1)
     
     if (iter > 1 && ll_new < ll_old) {
-      warning("Log-likelihood decreased!")
+      warning(paste("Log-likelihood decreased at iteration", iter, "!"))
     }
     if (abs(ll_new - ll_old) < tol) {
       convergence <- TRUE
@@ -135,8 +135,14 @@ em_pxl <- function(Y, q, dim1 = 10, dim2 = 10, dim3 = NULL, tol = 1e-3,
   
   GAMMA_truncated <- GAMMA
   GAMMA_truncated[GAMMA < 0.5] <- 0
+  
+  Covariance_matrix <- B %*% t(B) + PSI
+  Covariance_matrix_truncated <- B_truncated %*% t(B_truncated) + PSI
+  
   return(list(B = B, B_truncated = B_truncated, PSI = PSI, GAMMA = GAMMA, 
-              GAMMA_truncated = GAMMA_truncated, Z = t(E_zt), THETA = THETA, 
-              SIGMA_inverse = SIGMA_inverse, iter = iter, 
-              converged = convergence, likelihood = ll_old))
+              GAMMA_truncated = GAMMA_truncated, SIGMA_inverse = SIGMA_inverse, 
+              Covariance_matrix = Covariance_matrix, 
+              Covariance_matrix_truncated = Covariance_matrix_truncated, 
+              Z = t(E_zt), THETA = THETA, iter = iter, converged = convergence, 
+              likelihood = ll_old))
 }
