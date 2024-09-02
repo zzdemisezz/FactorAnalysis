@@ -2,6 +2,7 @@
 source("Scripts/data_generation.R")
 source("Scripts/em.R")
 source("Scripts/em_beta.R")
+source("Scripts/em_pxl.R")
 source("Scripts/run_em.R")
 source("Scripts/run_simulations.R")
 
