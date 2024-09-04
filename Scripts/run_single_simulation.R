@@ -20,7 +20,7 @@ q <- 3
 dim1 <- 20
 dim2 <- 20
 print_factors <- FALSE
-max_iter <- 10000
+max_iter <- 15000
 tol <- 1e-2
 ll <- FALSE
 num_runs <- 10

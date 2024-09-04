@@ -15,7 +15,7 @@ dim1 <- 20
 dim2 <- 20
 max_iter <- 10000
 tol = 1e-2
-ll <- FALSE
+ll <- TRUE
 num_runs <- 1
 
 # Generate data
