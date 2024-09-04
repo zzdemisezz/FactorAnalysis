@@ -6,22 +6,22 @@ source("Scripts/Analysis/loading-objects.R")
 main_dir <- "results_pxl" # make it "results/results_pxl" I think
 subdir_paths <- generate_subdir_paths(main_dir)
 
-# # Initialize an empty list to store all results
-# all_analysis_results <- list()
-# 
-# # Loop through each subdir_path and perform the analysis
-# for (subdir_path in subdir_paths) {
-#   print(paste("Performing analysis for:", subdir_path))
-#   
-#   # Load data directly
-#   analysis_results <- load_data(subdir_path)
-#   
-#   # Extract the dataset name dynamically, regardless of the root directory
-#   dataset_name <- gsub("/", "_", basename(subdir_path))
-#   
-#   # Store the result in the list with the dataset name as the key
-#   all_analysis_results[[dataset_name]] <- analysis_results
-# }
+# Initialize an empty list to store all results
+all_analysis_results <- list()
+
+# Loop through each subdir_path and perform the analysis
+for (subdir_path in subdir_paths) {
+  print(paste("Performing analysis for:", subdir_path))
+
+  # Load data directly
+  analysis_results <- load_data(subdir_path)
+
+  # Extract the dataset name dynamically, regardless of the root directory
+  dataset_name <- gsub("/", "_", basename(subdir_path))
+
+  # Store the result in the list with the dataset name as the key
+  all_analysis_results[[dataset_name]] <- analysis_results
+}
 
 all_analysis_results <- readRDS("all_analysis_results.rds")
 

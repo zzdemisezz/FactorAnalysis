@@ -5,14 +5,20 @@ library(cowplot)
 
 # generate_subdir_paths.R
 generate_subdir_paths <- function(main_dir) {
+  sizes <- c("3x3", "5x5", "overlap2-small", "overlap2-large", "overlap3-small", "overlap3-large")
+  strengths <- c("strong", "moderate", "weak")
   
-  # List all subdirectories under the main directory
-  subdir_paths <- list.dirs(main_dir, recursive = FALSE, full.names = TRUE)
+  paths <- c()
   
-  # Return the list of subdirectory paths
-  return(subdir_paths)
+  for (size in sizes) {
+    for (strength in strengths) {
+      path <- file.path(main_dir, paste(size, strength, sep="-"))
+      paths <- c(paths, path)
+    }
+  }
+  
+  return(paths)
 }
-
 
 # Generate factor heatmaps
 create_factor_heatmap <- function(loadings_matrix, title = "True factors") {
@@ -90,6 +96,7 @@ create_factor_heatmap <- function(loadings_matrix, title = "True factors") {
   # Print the final plot
   print(final_plot)
 }
+
 # Function to create a heatmap with the correct orientation
 create_heatmap <- function(matrix_data, title = "Heatmap", x_label = "Factors", y_label = "Loadings") {
   
@@ -136,63 +143,22 @@ generate_heatmaps <- function(true_matrix, statistics, prefix) {
   print(heatmap_MSE)
 }
 
-# Function to calculate element-wise average matrix for a given matrix type
-calculate_elementwise_average_matrix <- function(matrix_list) {
+# Calculate statistic matrices
+calculate_average_matrix <- function(matrix_list) {
   Reduce(`+`, matrix_list) / length(matrix_list)
 }
-# Function to calculate element-wise bias matrix for a given matrix type
-calculate_elementwise_bias_matrix <- function(matrix_list, true_matrix) {
-  # Calculate the mean matrix (average of all matrices) 
-  mean_matrix <- calculate_elementwise_average_matrix(matrix_list)
-  
-  # Calculate the bias matrix as the difference between the mean matrix and the true matrix
-  bias_matrix <- mean_matrix - true_matrix
-  
-  return(bias_matrix)
+calculate_variance <- function(matrix_list) {
+  # Calculate the variance for each element across the list of matrices
+  elementwise_variance <- Reduce(`+`, lapply(matrix_list, function(x) (x - calculate_average_matrix(matrix_list))^2)) / (length(matrix_list) - 1)
+  return(elementwise_variance)
 }
-# Function to calculate variance for a given matrix type
-calculate_elementwise_variance_matrix <- function(matrix_list) {
-  # Calculate the mean matrix using the calculate_average_matrix function
-  mean_matrix <- calculate_elementwise_average_matrix(matrix_list)
+calculate_MSE <- function(true_matrix, matrix_list) {
+  mse_matrix <- Reduce(`+`, lapply(matrix_list, function(matrix) {
+    (true_matrix - matrix)^2
+  })) / length(matrix_list)
   
-  # Extract the number of matrices and the dimensions of one matrix
-  num_matrices <- length(matrix_list)
-  matrix_dim <- dim(matrix_list[[1]])
-  
-  # Initialize the variance matrix
-  variance_matrix <- matrix(0, nrow = matrix_dim[1], ncol = matrix_dim[2])
-  
-  # Loop through each matrix to calculate the sum of squared differences
-  for (i in 1:num_matrices) {
-    matrix <- matrix_list[[i]]
-    variance_matrix <- variance_matrix + (matrix - mean_matrix)^2
-  }
-  
-  # The variance matrix is the sum of squared differences divided by (number of matrices - 1)
-  variance_matrix <- variance_matrix / (num_matrices - 1)
-  
-  return(variance_matrix)
+  return(mse_matrix)
 }
-# Function to calculate element-wise MSE matrix for a given matrix type
-calculate_elementwise_MSE_matrix <- function(matrix_list, true_matrix) {
-  # Extract the number of matrices and the dimensions of one matrix
-  num_matrices <- length(matrix_list)
-  matrix_dim <- dim(matrix_list[[1]])
-  
-  # Initialize a matrix to store the sum of squared differences
-  MSE_matrix <- matrix(0, nrow = matrix_dim[1], ncol = matrix_dim[2])
-  
-  # Loop through each matrix to compute the sum of squared differences
-  for (i in 1:num_matrices) {
-    MSE_matrix <- MSE_matrix + (matrix_list[[i]] - true_matrix)^2
-  }
-  
-  # The MSE matrix is the average of the squared differences
-  MSE_matrix <- MSE_matrix / num_matrices
-  
-  return(MSE_matrix)
-}
-
 # Calculate all statistic matrices for model
 calculate_statistics <- function(dataframe, type = "em") {
   # Retrieve B_true and Covariance_true from the dataframe
@@ -214,21 +180,18 @@ calculate_statistics <- function(dataframe, type = "em") {
   }
   
   # For B matrices
-  average_matrix <- calculate_elementwise_average_matrix(permuted_matrices)
-  bias_matrix <- calculate_elementwise_bias_matrix(permuted_matrices, B_true)
-  variance_matrix <- calculate_elementwise_variance_matrix(permuted_matrices)
-  MSE_matrix <- calculate_elementwise_MSE_matrix(permuted_matrices, B_true)
+  average_matrix <- calculate_average_matrix(permuted_matrices)
+  bias_matrix <- average_matrix - B_true
+  variance_matrix <- calculate_variance(permuted_matrices)
+  MSE_matrix <- calculate_MSE(B_true, permuted_matrices)
   
   # For Covariance matrices
-  average_covariance <- calculate_elementwise_average_matrix(covariance_matrices)
-  bias_covariance <- calculate_elementwise_bias_matrix(covariance_matrices, Covariance_true)
-  variance_covariance <- calculate_elementwise_variance_matrix(covariance_matrices)
-  MSE_covariance <- calculate_elementwise_MSE_matrix(covariance_matrices, Covariance_true)
+  average_covariance <- calculate_average_matrix(covariance_matrices)
+  bias_covariance <- average_covariance - Covariance_true
+  variance_covariance <- calculate_variance(covariance_matrices)
+  MSE_covariance <- calculate_MSE(Covariance_true, covariance_matrices)
   
-  # Return all calculated statistics
-  return(list(
-    B_true = B_true,
-    Covariance_true = Covariance_true,
+  list(
     average_matrix = average_matrix,
     bias_matrix = bias_matrix,
     variance_matrix = variance_matrix,
@@ -237,7 +200,122 @@ calculate_statistics <- function(dataframe, type = "em") {
     bias_covariance = bias_covariance,
     variance_covariance = variance_covariance,
     MSE_covariance = MSE_covariance
+  )
+}
+# Calculate metrics
+calculate_metrics <- function(dataframe, type = "em") {
+  statistics <- calculate_statistics(dataframe, type = type)
+  metrics <- c(
+    mean_bias = mean(statistics$bias_matrix),
+    mean_variance = mean(statistics$variance_matrix),
+    mean_mse = mean(statistics$MSE_matrix)
+  )
+  metrics_covariance <- c(
+    mean_bias = mean(statistics$bias_covariance),
+    mean_variance = mean(statistics$variance_covariance),
+    mean_mse = mean(statistics$MSE_covariance)
+  )
+  structure_check <- compare_GAMMA_to_B_true(dataframe, type = type)
+  
+  return(list(
+    metrics_B = metrics,
+    metrics_Covariance = metrics_covariance,
+    exact_matches = structure_check$exact_matches,
+    non_matching_indices = structure_check$non_matching_indices
+  ))
+}
+# Function to see how often we get structure right
+compare_GAMMA_to_B_true <- function(dataframe, type = "em") {
+  if (type == "em") {
+    GAMMA_permuted_list <- dataframe$GAMMA_permuted
+  } else if (type == "em_beta") {
+    GAMMA_permuted_list <- dataframe$GAMMA_permuted_beta
+  } else if (type == "em_pxl") {
+    GAMMA_permuted_list <- dataframe$GAMMA_permuted_pxl
+  } else {
+    stop("Invalid type specified. Choose 'em', 'em_beta', or 'em_pxl'.")
+  }
+  
+  B_true <- dataframe$B_True[[1]]  # Assuming B_true is the same across simulations
+  
+  # Compare each GAMMA_permuted matrix with B_true and check if they match
+  match_results <- sapply(GAMMA_permuted_list, function(GAMMA_permuted) {
+    isTRUE(all.equal(GAMMA_permuted, B_true))
+  })
+  
+  # Get indices where the matrices do not match
+  non_matching_indices <- which(!match_results)
+  
+  # Calculate the number of exact matches
+  exact_matches <- sum(match_results)
+  
+  return(list(
+    exact_matches = exact_matches,
+    non_matching_indices = non_matching_indices
   ))
 }
 
-
+# Functions to create box plots
+# Function to calculate bias, variance, and MSE for a given matrix type
+calculate_bias_variance_mse <- function(dataframe, true_matrix, matrix_name) {
+  metrics_list <- list()
+  
+  for (i in 1:nrow(dataframe)) {
+    permuted_matrix <- dataframe[[matrix_name]][[i]]
+    
+    bias <- mean(permuted_matrix - true_matrix)
+    variance <- mean((permuted_matrix - mean(permuted_matrix))^2)
+    mse <- mean((permuted_matrix - true_matrix)^2)
+    
+    metrics_list[[i]] <- data.frame(
+      Bias = bias,
+      Variance = variance,
+      MSE = mse
+    )
+  }
+  
+  metrics_df <- bind_rows(metrics_list)
+  return(metrics_df)
+}
+# Function to compile metrics data and generate the plot
+generate_metric_plot <- function(all_analysis_results, matrix_name, true_matrix_name, metric_name) {
+  metrics_data <- list()
+  
+  for (dataset_name in names(all_analysis_results)) {
+    dataframe <- all_analysis_results[[dataset_name]]$dataframe
+    true_matrix <- dataframe[[true_matrix_name]][[1]]
+    
+    # Calculate metrics
+    metrics_df <- calculate_bias_variance_mse(dataframe, true_matrix, matrix_name)
+    
+    # Extract condition and base name
+    condition <- gsub(".*_", "", dataset_name)
+    base_name <- gsub("_Strong|_Moderate|_Weak", "", dataset_name)
+    
+    # Add labels to the metrics
+    metrics_df$Condition <- factor(condition, levels = c("Weak", "Moderate", "Strong"))
+    metrics_df$Dataset <- base_name
+    
+    metrics_data[[dataset_name]] <- metrics_df
+  }
+  
+  metrics_data_combined <- bind_rows(metrics_data)
+  
+  metrics_data_combined$Dataset <- factor(metrics_data_combined$Dataset, levels = c("3x3", "5x5", "overlap2-small", "overlap2-large", "overlap3-small", "overlap3-large"))
+  
+  # Determine the title based on the type of matrix
+  if (grepl("Covariance", matrix_name, ignore.case = TRUE)) {
+    title_text <- paste(metric_name, "of Covariance for each structure")
+  } else {
+    title_text <- paste(metric_name, "of B for each structure")
+  }
+  
+  # Generate the plot
+  ggplot(metrics_data_combined %>% select(Condition, Value = !!sym(metric_name), Dataset) %>% filter(!is.na(Value)), aes(x = Condition, y = Value, fill = Condition)) +
+    geom_boxplot() +
+    labs(title = title_text, x = "Condition", y = metric_name) +
+    theme_minimal() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+    scale_fill_manual(values = c("Weak" = "green", "Moderate" = "blue", "Strong" = "red")) +
+    facet_grid(. ~ Dataset, scales = "free_x")
+}
