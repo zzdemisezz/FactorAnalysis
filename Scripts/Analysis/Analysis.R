@@ -3,7 +3,7 @@ source("Scripts/Analysis/functions.R")
 source("Scripts/Analysis/loading-objects.R")
 
 # Now you can use the function by just specifying the main directory
-main_dir <- "results_pxl"
+main_dir <- "results_pxl" # make it "results/results_pxl" I think
 subdir_paths <- generate_subdir_paths(main_dir)
 
 # # Initialize an empty list to store all results
