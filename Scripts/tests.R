@@ -11,15 +11,16 @@ set.seed(12)
 # Parameters
 n <- 500 
 q <- 3
-dim1 <- 10
-dim2 <- 10
-max_iter <- 5000
+dim1 <- 20
+dim2 <- 20
+max_iter <- 10000
 tol = 1e-2
 ll <- FALSE
-num_runs <- 10
+num_runs <- 1
 
 # Generate data
-data <- generate_data(n, dim1, dim2, q, 5, corr = "strong", print_factors = TRUE)
+data <- generate_data_simple(n, dim1, dim2, q, "weak", TRUE)
+# data <- generate_data(n, dim1, dim2, q, 5, corr = "strong", print_factors = TRUE)
 # data <- generate_data_2overlap(n, dim1, dim2, q, overlap = "big",
 #                                corr = "weak", print_factors = TRUE)
 # data <- generate_data_3overlap(n, dim1, dim2, q, overlap = "big",

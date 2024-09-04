@@ -17,40 +17,16 @@ set.seed(simulation_index)  # Ensure different seeds for different runs
 # Parameters
 n <- 500 
 q <- 3
-dim1 <- 10
-dim2 <- 10
+dim1 <- 20
+dim2 <- 20
 print_factors <- FALSE
-max_iter <- 5000
+max_iter <- 10000
 tol <- 1e-2
 ll <- FALSE
 num_runs <- 10
 
-# List of datasets to generate and their descriptions
-data_generators <- list(
-  list(name = "3x3-strong", generator = function() generate_data(n, dim1, dim2, q, 3, corr = "strong", print_factors = print_factors)),
-  list(name = "3x3-moderate", generator = function() generate_data(n, dim1, dim2, q, 3, corr = "moderate", print_factors = print_factors)),
-  list(name = "3x3-weak", generator = function() generate_data(n, dim1, dim2, q, 3, corr = "weak", print_factors = print_factors)),
-  
-  list(name = "5x5-strong", generator = function() generate_data(n, dim1, dim2, q, 5, corr = "strong", print_factors = print_factors)),
-  list(name = "5x5-moderate", generator = function() generate_data(n, dim1, dim2, q, 5, corr = "moderate", print_factors = print_factors)),
-  list(name = "5x5-weak", generator = function() generate_data(n, dim1, dim2, q, 5, corr = "weak", print_factors = print_factors)),
-  
-  list(name = "overlap2-small-strong", generator = function() generate_data_2overlap(n, dim1, dim2, q, overlap = "small", corr = "strong", print_factors = print_factors)),
-  list(name = "overlap2-small-moderate", generator = function() generate_data_2overlap(n, dim1, dim2, q, overlap = "small", corr = "moderate", print_factors = print_factors)),
-  list(name = "overlap2-small-weak", generator = function() generate_data_2overlap(n, dim1, dim2, q, overlap = "small", corr = "weak", print_factors = print_factors)),
-  
-  list(name = "overlap2-large-strong", generator = function() generate_data_2overlap(n, dim1, dim2, q, overlap = "big", corr = "strong", print_factors = print_factors)),
-  list(name = "overlap2-large-moderate", generator = function() generate_data_2overlap(n, dim1, dim2, q, overlap = "big", corr = "moderate", print_factors = print_factors)),
-  list(name = "overlap2-large-weak", generator = function() generate_data_2overlap(n, dim1, dim2, q, overlap = "big", corr = "weak", print_factors = print_factors)),
-  
-  list(name = "overlap3-small-strong", generator = function() generate_data_3overlap(n, dim1, dim2, q, overlap = "small", corr = "strong", print_factors = print_factors)),
-  list(name = "overlap3-small-moderate", generator = function() generate_data_3overlap(n, dim1, dim2, q, overlap = "small", corr = "moderate", print_factors = print_factors)),
-  list(name = "overlap3-small-weak", generator = function() generate_data_3overlap(n, dim1, dim2, q, overlap = "small", corr = "weak", print_factors = print_factors)),
-  
-  list(name = "overlap3-large-strong", generator = function() generate_data_3overlap(n, dim1, dim2, q, overlap = "big", corr = "strong", print_factors = print_factors)),
-  list(name = "overlap3-large-moderate", generator = function() generate_data_3overlap(n, dim1, dim2, q, overlap = "big", corr = "moderate", print_factors = print_factors)),
-  list(name = "overlap3-large-weak", generator = function() generate_data_3overlap(n, dim1, dim2, q, overlap = "big", corr = "weak", print_factors = print_factors))
-)
+# List of datasets to generate and their descriptions 
+load("data_generators_new.RData")
 
 # Find the right generator
 generator <- NULL
@@ -68,7 +44,7 @@ if (is.null(generator)) {
 results <- run_simulations(generator, 1)
 
 # Create subfolder if it doesn't exist
-output_dir <- file.path("/well/nichols/users/rht383/results_pxl", data_generator_name)
+output_dir <- file.path("/well/nichols/users/rht383/results_complex", data_generator_name)
 if (!dir.exists(output_dir)) {
   dir.create(output_dir, recursive = TRUE)
 }

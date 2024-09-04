@@ -1,15 +1,27 @@
+rm(list = ls())
 source("Scripts/data_generation.R")
 
 # initialisation
-n <- 200
-dim1 <- 10
-dim2 <- 10
+n <- 500
+dim1 <- 20
+dim2 <- 20
 q <- 3
-
 set.seed(13)
-data <- generate_data(n, dim1, dim2, q, 5, "weak", FALSE)
+data <- generate_data_hard(n, dim1, dim2, q, "strong", TRUE)
+# Remove diagonal elements (which are 1) and zero elements
+non_zero_values <- data$cor_matrix[data$cor_matrix != 0 & data$cor_matrix != 1]
+
+# Print the results
+print(range(non_zero_values))
+
+stop()
+View(data$B_true)
+View(data$cor_matrix)
+# checking if PSI remains same ####
+set.seed(13)
+data <- generate_data_medium(n, dim1, dim2, q, "weak", FALSE)
 set.seed(14)
-data2 <- generate_data(n, dim1, dim2, q, 5, "weak", FALSE)
+data2 <- generate_data_medium(n, dim1, dim2, q, "weak", FALSE)
 identical(data$PSI_true, data2$PSI_true)
 identical(data$Y, data2$Y)
 
