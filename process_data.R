@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
 
 # Load the necessary R script for the permute function
-source("FactorAnalysis/Scripts/Analysis/permute.R")
+source("/well/nichols/users/rht383/FactorAnalysis/Scripts/Analysis/permute.R")
 
 # Arguments from command line (list of files and output directory)
 args <- commandArgs(trailingOnly = TRUE)
