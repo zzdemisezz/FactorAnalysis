@@ -1,15 +1,21 @@
 #!/usr/bin/env Rscript
 
 # Load the necessary R script for the permute function
-source("Scripts/Analysis/Permute.R")
+source("FactorAnalysis/Scripts/Analysis/permute.R")
 
 # Arguments from command line (list of files and output directory)
 args <- commandArgs(trailingOnly = TRUE)
 rds_files <- unlist(strsplit(args[1], " "))  # The list of files
 output_dir <- args[2]
 
+# Create a new folder for processed chunks if it doesn't already exist
+processed_dir <- file.path(output_dir, "processed_chunks")
+if (!dir.exists(processed_dir)) {
+  dir.create(processed_dir)
+}
+
 # Function to process a chunk of files
-process_chunk <- function(rds_files, output_dir) {
+process_chunk <- function(rds_files, processed_dir) {
   simulation_data <- lapply(rds_files, readRDS)
   names(simulation_data) <- basename(rds_files)
   
@@ -126,11 +132,11 @@ process_chunk <- function(rds_files, output_dir) {
   # Add permuted matrices to dataframe
   result_dataframe <- add_permuted_B_GAMMA(result_dataframe, B_true)
   
-  # Save result as an RDS file
-  saveRDS(result_dataframe, file = file.path(output_dir, "processed_chunk.rds"))
+  # Save result as an RDS file, naming the file uniquely using the SLURM_ARRAY_TASK_ID
+  saveRDS(result_dataframe, file = file.path(processed_dir, paste0("processed_chunk_", SLURM_ARRAY_TASK_ID, ".rds")))
 }
 
 # Process the files assigned to this job
-process_chunk(rds_files, output_dir)
+process_chunk(rds_files, processed_dir)
 
 cat("Data processing complete for files:", rds_files, "\n")

@@ -4,8 +4,11 @@
 args <- commandArgs(trailingOnly = TRUE)
 output_dir <- args[1]
 
+# Define the directory where the processed chunks are saved
+processed_dir <- file.path(output_dir, "processed_chunks")
+
 # Get the list of all processed .rds files from all jobs
-chunk_files <- list.files(output_dir, pattern = "processed_chunk.rds", full.names = TRUE, recursive = TRUE)
+chunk_files <- list.files(processed_dir, pattern = "processed_chunk_.*\\.rds$", full.names = TRUE)
 
 # Initialize an empty list to store the dataframes
 all_dataframes <- list()
